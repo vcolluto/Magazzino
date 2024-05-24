@@ -1,7 +1,12 @@
 package org.generation.italy;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
+
+import org.generation.italy.model.Movimento;
 
 public class Main {
 
@@ -45,9 +50,13 @@ public class Main {
 				put("U04", "spostamento a altro magazzino");
 			}
 		};
+		
+		ArrayList<Movimento> elencoMovimenti =new ArrayList<Movimento>();
 
+		DateTimeFormatter df=DateTimeFormatter.ofPattern("dd/MM/yyyy");		//uso il formato giorno/mese/anno
 		Scanner sc = new Scanner(System.in);
 		String scelta;
+		Movimento m;
 		do {
 			System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n**** GESTIONE MAGAZZINO *****\n");
 			System.out.println("1. Inserimento movimento in entrata");
@@ -76,6 +85,24 @@ public class Main {
 			case "1":
 				// codice per il caso "1"
 				System.out.println("Inserimento movimento in entrata");
+				
+				m=new Movimento();	//creo un nuovo oggetto Movimento
+				System.out.print("Inserisci la data: ");
+				m.data=LocalDate.parse(sc.nextLine(), df);	//leggo una stringa (sc.nextLine) e la converto in una data (LocalDate.parse) 	
+				System.out.print("Inserisci il codice prodotto: ");
+				m.codiceProdotto=sc.nextLine();
+				System.out.print("Inserisci la quantità: ");
+				m.quantità=sc.nextInt();
+				sc.nextLine();
+				System.out.print("Inserisci il codice movimento: ");
+				m.codiceMovimento=sc.nextLine();
+				if (m.codiceMovimento.equals("E01") || m.codiceMovimento.equals("E02")) {
+					System.out.print("Inserisci il riferimento: ");
+					m.riferimento=sc.nextLine();
+				}
+				elencoMovimenti.add(m);	
+				
+				
 				break;
 			case "2":
 				// codice per il caso "2"
