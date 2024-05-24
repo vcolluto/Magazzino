@@ -12,6 +12,8 @@ public class Main {
 
 	public static void main(String[] args) {
 		HashMap<String, String> elencoFornitori = new HashMap<String, String>() {
+			private static final long serialVersionUID = 1L;
+
 			{
 				put("F01", "Mario Rossi");
 				put("F02", "Franco Verdi");
@@ -19,7 +21,9 @@ public class Main {
 			}
 		};
 
-		HashMap<String, String> elencoClienti = new HashMap<String, String>() {
+		HashMap<String, String> elencoClienti = new HashMap<String, String>() {			
+			private static final long serialVersionUID = 1L;
+
 			{
 				put("C01", "Franca Rame");
 				put("C02", "Pina Acciaio");
@@ -27,7 +31,9 @@ public class Main {
 			}
 		};
 
-		HashMap<String, String> elencoProdotti = new HashMap<String, String>() {
+		HashMap<String, String> elencoProdotti = new HashMap<String, String>() {			
+			private static final long serialVersionUID = 1L;
+
 			{
 				put("P01", "Pane");
 				put("P02", "Pasta");
@@ -35,7 +41,9 @@ public class Main {
 			}
 		};
 
-		HashMap<String, String> tipologieMovimento = new HashMap<String, String>() {
+		HashMap<String, String> tipologieMovimento = new HashMap<String, String>() {			
+			private static final long serialVersionUID = 1L;
+
 			{
 				// movimenti in entrata
 				put("E01", "acquisto da fornitore");
@@ -89,8 +97,15 @@ public class Main {
 				m=new Movimento();	//creo un nuovo oggetto Movimento
 				System.out.print("Inserisci la data: ");
 				m.data=LocalDate.parse(sc.nextLine(), df);	//leggo una stringa (sc.nextLine) e la converto in una data (LocalDate.parse) 	
-				System.out.print("Inserisci il codice prodotto: ");
-				m.codiceProdotto=sc.nextLine();
+				do {
+					System.out.print("Inserisci il codice prodotto: ");
+					m.codiceProdotto=sc.nextLine();
+					if (!elencoProdotti.containsKey(m.codiceProdotto))
+						System.out.println("Codice prodotto non valido");
+				}
+				while (!elencoProdotti.containsKey(m.codiceProdotto)); //torno indietro se la chiave non esiste nell'hasmap elencoProdotti
+				System.out.println("Prodotto selezionato: "+elencoProdotti.get(m.codiceProdotto));
+				
 				System.out.print("Inserisci la quantità: ");
 				m.quantità=sc.nextInt();
 				sc.nextLine();
@@ -131,6 +146,7 @@ public class Main {
 			System.out.println("Premi invio per continuare...");
 			sc.nextLine();
 		} while (!scelta.equals("6")); // torno indietro se la scelta è diversa da 6
+	sc.close();
 	}
 
 }
