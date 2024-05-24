@@ -97,23 +97,36 @@ public class Main {
 				m=new Movimento();	//creo un nuovo oggetto Movimento
 				System.out.print("Inserisci la data: ");
 				m.data=LocalDate.parse(sc.nextLine(), df);	//leggo una stringa (sc.nextLine) e la converto in una data (LocalDate.parse) 	
-				do {
-					System.out.print("Inserisci il codice prodotto: ");
-					m.codiceProdotto=sc.nextLine();
-					if (!elencoProdotti.containsKey(m.codiceProdotto))
-						System.out.println("Codice prodotto non valido");
-				}
-				while (!elencoProdotti.containsKey(m.codiceProdotto)); //torno indietro se la chiave non esiste nell'hasmap elencoProdotti
-				System.out.println("Prodotto selezionato: "+elencoProdotti.get(m.codiceProdotto));
+				
+				m.codiceProdotto= verificaCodice(elencoProdotti, sc, "Inserisci il codice prodotto: ");	//se il codice è valido, lo restituisce come valore di ritorno		
 				
 				System.out.print("Inserisci la quantità: ");
 				m.quantità=sc.nextInt();
 				sc.nextLine();
-				System.out.print("Inserisci il codice movimento: ");
-				m.codiceMovimento=sc.nextLine();
-				if (m.codiceMovimento.equals("E01") || m.codiceMovimento.equals("E02")) {
-					System.out.print("Inserisci il riferimento: ");
-					m.riferimento=sc.nextLine();
+				
+				m.codiceMovimento= verificaCodice(tipologieMovimento, sc, "Inserisci il codice movimento: ");
+				
+				/*
+				do {
+					System.out.print("Inserisci il codice movimento: ");
+					m.codiceMovimento=sc.nextLine();
+					if (!tipologieMovimento.containsKey(m.codiceMovimento) || 
+						!m.codiceMovimento.startsWith("E"))  	//il codice movimento non è valido se non è contenuto nelle chiavi oppure se non inizia per "E"
+						System.out.println("Codice movimento non valido");
+				} while (!tipologieMovimento.containsKey(m.codiceMovimento) || 
+						!m.codiceMovimento.startsWith("E"));
+						
+				System.out.println(tipologieMovimento.get(m.codiceMovimento));	//mostro il movimento selezionato
+				
+						
+				*/
+				
+				if (m.codiceMovimento.equals("E01")) {				
+					
+					m.riferimento= verificaCodice(elencoFornitori, sc, "Inserisci il codice fornitore: ");
+				} else if (m.codiceMovimento.equals("E02")) {					
+					
+					m.riferimento= verificaCodice(elencoClienti, sc, "Inserisci il codice cliente: ");
 				}
 				elencoMovimenti.add(m);	
 				
@@ -147,6 +160,21 @@ public class Main {
 			sc.nextLine();
 		} while (!scelta.equals("6")); // torno indietro se la scelta è diversa da 6
 	sc.close();
+	}
+
+	
+	//dato un generico hashmap codice-descrizione, verifica se il codice inserito dall'utente esiste nell'hashmap
+	//se non esiste ripete l'inserimento, se esiste mostra la corrispondente descrizione
+	private static String verificaCodice(HashMap<String, String> elencoValori, Scanner sc, String messaggio) {
+		String codice;
+		do {
+			System.out.print(messaggio);
+			codice=sc.nextLine();
+			if (!elencoValori.containsKey(codice))
+				System.out.println("Codice non valido");
+		} while (!elencoValori.containsKey(codice)); //torno indietro se la chiave non esiste nell'hasmap 
+		System.out.println("Hai selezionato: "+elencoValori.get(codice));
+		return codice;		//dopo aver eseguito le istruzioni restituisco il valore del codice
 	}
 
 }
