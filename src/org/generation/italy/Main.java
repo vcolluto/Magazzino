@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Scanner;
 
 import org.generation.italy.model.Movimento;
@@ -11,9 +12,8 @@ import org.generation.italy.model.Movimento;
 public class Main {
 
 	public static void main(String[] args) {
-		HashMap<String, String> elencoFornitori = new HashMap<String, String>() {
+		LinkedHashMap<String, String> elencoFornitori = new LinkedHashMap<String, String>() {
 			private static final long serialVersionUID = 1L;
-
 			{
 				put("F01", "Mario Rossi");
 				put("F02", "Franco Verdi");
@@ -21,9 +21,8 @@ public class Main {
 			}
 		};
 
-		HashMap<String, String> elencoClienti = new HashMap<String, String>() {			
+		LinkedHashMap<String, String> elencoClienti = new LinkedHashMap<String, String>() {			
 			private static final long serialVersionUID = 1L;
-
 			{
 				put("C01", "Franca Rame");
 				put("C02", "Pina Acciaio");
@@ -31,7 +30,7 @@ public class Main {
 			}
 		};
 
-		HashMap<String, String> elencoProdotti = new HashMap<String, String>() {			
+		LinkedHashMap<String, String> elencoProdotti = new LinkedHashMap<String, String>() {			
 			private static final long serialVersionUID = 1L;
 
 			{
@@ -41,7 +40,7 @@ public class Main {
 			}
 		};
 
-		HashMap<String, String> tipologieMovimento = new HashMap<String, String>() {			
+		LinkedHashMap<String, String> tipologieMovimento = new LinkedHashMap<String, String>() {			
 			private static final long serialVersionUID = 1L;
 
 			{
@@ -58,6 +57,17 @@ public class Main {
 				put("U04", "spostamento a altro magazzino");
 			}
 		};
+		
+		LinkedHashMap<String, String> tipologieMovimentoEntrata=new LinkedHashMap<String, String>();
+		LinkedHashMap<String, String> tipologieMovimentoUscita=new LinkedHashMap<String, String>();
+		
+		//ricavo il sottoinsieme dei movimenti in entrata e in uscita
+		for (String cod:tipologieMovimento.keySet())	
+			if (cod.startsWith("E"))		//se il codice inizia per "E" aggiungo ai movimenti in entrata
+				tipologieMovimentoEntrata.put(cod, tipologieMovimento.get(cod));
+			else							//se il codice non inizia per "E" aggiungo ai movimenti in uscita
+				tipologieMovimentoUscita.put(cod, tipologieMovimento.get(cod));
+		
 		
 		ArrayList<Movimento> elencoMovimenti =new ArrayList<Movimento>();
 
@@ -104,7 +114,7 @@ public class Main {
 				m.quantità=sc.nextInt();
 				sc.nextLine();
 				
-				m.codiceMovimento= verificaCodice(tipologieMovimento, sc, "Inserisci il codice movimento: ");
+				m.codiceMovimento= verificaCodice(tipologieMovimentoEntrata, sc, "Inserisci il codice movimento: ");
 				
 				/*
 				do {
@@ -165,10 +175,15 @@ public class Main {
 	
 	//dato un generico hashmap codice-descrizione, verifica se il codice inserito dall'utente esiste nell'hashmap
 	//se non esiste ripete l'inserimento, se esiste mostra la corrispondente descrizione
-	private static String verificaCodice(HashMap<String, String> elencoValori, Scanner sc, String messaggio) {
+	private static String verificaCodice(LinkedHashMap<String, String> elencoValori, Scanner sc, String messaggio) {
 		String codice;
 		do {
-			System.out.print(messaggio);
+			System.out.println(messaggio);
+			
+			System.out.println("Opzioni disponibili: "+elencoValori);		//mostro l'elenco dei valori possibili
+			System.out.print("Scelta: ");
+			
+						
 			codice=sc.nextLine();
 			if (!elencoValori.containsKey(codice))
 				System.out.println("Codice non valido");
