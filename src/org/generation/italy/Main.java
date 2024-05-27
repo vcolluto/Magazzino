@@ -75,7 +75,8 @@ public class Main {
 		Scanner sc = new Scanner(System.in);
 		String scelta;
 		Movimento m;
-		int idMov=0;
+		int idMov=0, giacenza;
+		
 		do {
 			System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n**** GESTIONE MAGAZZINO *****\n");
 			System.out.println("1. Inserimento movimento in entrata");
@@ -177,13 +178,13 @@ public class Main {
 				System.out.println("Visualizzazione movimenti in entrata");
 				for (Movimento mov:elencoMovimenti) {
 					if (mov.codiceMovimento.startsWith("E"))	//mostro solo quelli in entrata
-						System.out.println(mov.toString());
-					/*	System.out.print(
+						//System.out.println(mov.toString());
+						System.out.print(
 								"Id: "+mov.id+ "\t"+
 								"Data: "+mov.data+ "\t"+
 								"Tipologia: "+tipologieMovimento.get(mov.codiceMovimento)+ "\t"+
 								"Prodotto: "+elencoProdotti.get(mov.codiceProdotto)+ "\t"+
-								"Quantità: "+mov.quantità+ "\t");*/
+								"Quantità: "+mov.quantità+ "\t");
 						if (mov.codiceMovimento.equals("E01"))
 							System.out.println("Fornitore: "+elencoFornitori.get(mov.riferimento) );
 						else if (mov.codiceMovimento.equals("E02"))
