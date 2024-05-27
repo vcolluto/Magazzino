@@ -145,6 +145,28 @@ public class Main {
 			case "2":
 				// codice per il caso "2"
 				System.out.println("Inserimento movimento in uscita");
+				
+				m=new Movimento();	//creo un nuovo oggetto Movimento
+				System.out.print("Inserisci la data: ");
+				m.data=LocalDate.parse(sc.nextLine(), df);	//leggo una stringa (sc.nextLine) e la converto in una data (LocalDate.parse) 	
+				
+				m.codiceProdotto= verificaCodice(elencoProdotti, sc, "Inserisci il codice prodotto: ");	//se il codice è valido, lo restituisce come valore di ritorno		
+				
+				System.out.print("Inserisci la quantità: ");
+				m.quantità=sc.nextInt();
+				sc.nextLine();
+				
+				m.codiceMovimento= verificaCodice(tipologieMovimentoUscita, sc, "Inserisci il codice movimento: ");
+				
+								
+				if (m.codiceMovimento.equals("U02")) {				
+					
+					m.riferimento= verificaCodice(elencoFornitori, sc, "Inserisci il codice fornitore: ");
+				} else if (m.codiceMovimento.equals("U01")) {					
+					
+					m.riferimento= verificaCodice(elencoClienti, sc, "Inserisci il codice cliente: ");
+				}
+				elencoMovimenti.add(m);	
 				break;
 			case "3":
 				System.out.println("Visualizzazione movimenti in entrata");
