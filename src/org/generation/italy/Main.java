@@ -75,12 +75,13 @@ public class Main {
 		Scanner sc = new Scanner(System.in);
 		String scelta;
 		Movimento m;
+		int idMov=0;
 		do {
 			System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n**** GESTIONE MAGAZZINO *****\n");
 			System.out.println("1. Inserimento movimento in entrata");
 			System.out.println("2. Inserimento movimento in uscita");
-			System.out.println("3. Visualizzazione movimento in entrata");
-			System.out.println("4. Visualizzazione movimento in uscita");
+			System.out.println("3. Visualizzazione movimenti in entrata");
+			System.out.println("4. Visualizzazione movimenti in uscita");
 			System.out.println("5. Calcolo giacenza prodotto\n");
 			System.out.println("6. Esci");
 
@@ -105,6 +106,8 @@ public class Main {
 				System.out.println("Inserimento movimento in entrata");
 				
 				m=new Movimento();	//creo un nuovo oggetto Movimento
+				idMov++;
+				m.id=idMov;
 				System.out.print("Inserisci la data: ");
 				m.data=LocalDate.parse(sc.nextLine(), df);	//leggo una stringa (sc.nextLine) e la converto in una data (LocalDate.parse) 	
 				
@@ -147,6 +150,8 @@ public class Main {
 				System.out.println("Inserimento movimento in uscita");
 				
 				m=new Movimento();	//creo un nuovo oggetto Movimento
+				idMov++;
+				m.id=idMov;
 				System.out.print("Inserisci la data: ");
 				m.data=LocalDate.parse(sc.nextLine(), df);	//leggo una stringa (sc.nextLine) e la converto in una data (LocalDate.parse) 	
 				
@@ -170,11 +175,38 @@ public class Main {
 				break;
 			case "3":
 				System.out.println("Visualizzazione movimenti in entrata");
-				// codice per il caso "3"
+				for (Movimento mov:elencoMovimenti) {
+					if (mov.codiceMovimento.startsWith("E"))	//mostro solo quelli in entrata
+						System.out.println(mov.toString());
+					/*	System.out.print(
+								"Id: "+mov.id+ "\t"+
+								"Data: "+mov.data+ "\t"+
+								"Tipologia: "+tipologieMovimento.get(mov.codiceMovimento)+ "\t"+
+								"Prodotto: "+elencoProdotti.get(mov.codiceProdotto)+ "\t"+
+								"Quantità: "+mov.quantità+ "\t");*/
+						if (mov.codiceMovimento.equals("E01"))
+							System.out.println("Fornitore: "+elencoFornitori.get(mov.riferimento) );
+						else if (mov.codiceMovimento.equals("E02"))
+							System.out.println("Cliente: "+elencoClienti.get(mov.riferimento) );
+				}
 				break;
 			case "4":
 				// codice per il caso "4"
 				System.out.println("Visualizzazione movimenti in uscita");
+				for (Movimento mov:elencoMovimenti) {
+					if (mov.codiceMovimento.startsWith("U"))	//mostro solo quelli in entrata
+						System.out.print(
+								"Id: "+mov.id+ "\t"+
+								"Data: "+mov.data+ "\t"+
+								"Tipologia: "+tipologieMovimento.get(mov.codiceMovimento)+ "\t"+
+								"Prodotto: "+elencoProdotti.get(mov.codiceProdotto)+ "\t"+
+								"Quantità: "+mov.quantità+ "\t");
+						if (mov.codiceMovimento.equals("U02"))
+							System.out.println("Fornitore: "+elencoFornitori.get(mov.riferimento) );
+						else if (mov.codiceMovimento.equals("U01"))
+							System.out.println("Clienti: "+elencoClienti.get(mov.riferimento) );
+				}
+				
 				break;
 			case "5":
 				// codice per il caso "5"
