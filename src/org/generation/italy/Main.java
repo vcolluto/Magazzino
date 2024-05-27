@@ -73,7 +73,7 @@ public class Main {
 
 		DateTimeFormatter df=DateTimeFormatter.ofPattern("dd/MM/yyyy");		//uso il formato giorno/mese/anno
 		Scanner sc = new Scanner(System.in);
-		String scelta;
+		String scelta,codP;
 		Movimento m;
 		int idMov=0, giacenza;
 		
@@ -177,11 +177,11 @@ public class Main {
 			case "3":
 				System.out.println("Visualizzazione movimenti in entrata");
 				for (Movimento mov:elencoMovimenti) {
-					if (mov.codiceMovimento.startsWith("E"))	//mostro solo quelli in entrata
+					if (mov.codiceMovimento.startsWith("E")) {	//mostro solo quelli in entrata 
 						//System.out.println(mov.toString());
 						System.out.print(
 								"Id: "+mov.id+ "\t"+
-								"Data: "+mov.data+ "\t"+
+								"Data: "+mov.data.format(df)+ "\t"+
 								"Tipologia: "+tipologieMovimento.get(mov.codiceMovimento)+ "\t"+
 								"Prodotto: "+elencoProdotti.get(mov.codiceProdotto)+ "\t"+
 								"Quantità: "+mov.quantità+ "\t");
@@ -189,16 +189,17 @@ public class Main {
 							System.out.println("Fornitore: "+elencoFornitori.get(mov.riferimento) );
 						else if (mov.codiceMovimento.equals("E02"))
 							System.out.println("Cliente: "+elencoClienti.get(mov.riferimento) );
+					}
 				}
 				break;
 			case "4":
 				// codice per il caso "4"
 				System.out.println("Visualizzazione movimenti in uscita");
 				for (Movimento mov:elencoMovimenti) {
-					if (mov.codiceMovimento.startsWith("U"))	//mostro solo quelli in entrata
+					if (mov.codiceMovimento.startsWith("U")) {	//mostro solo quelli in entrata
 						System.out.print(
 								"Id: "+mov.id+ "\t"+
-								"Data: "+mov.data+ "\t"+
+								"Data: "+mov.data.format(df)+ "\t"+
 								"Tipologia: "+tipologieMovimento.get(mov.codiceMovimento)+ "\t"+
 								"Prodotto: "+elencoProdotti.get(mov.codiceProdotto)+ "\t"+
 								"Quantità: "+mov.quantità+ "\t");
@@ -206,12 +207,22 @@ public class Main {
 							System.out.println("Fornitore: "+elencoFornitori.get(mov.riferimento) );
 						else if (mov.codiceMovimento.equals("U01"))
 							System.out.println("Clienti: "+elencoClienti.get(mov.riferimento) );
+					}
 				}
 				
 				break;
 			case "5":
 				// codice per il caso "5"
 				System.out.println("Calcolo giacenza");
+				codP= verificaCodice(elencoProdotti, sc, "Inserisci il codice prodotto: ");	//se il codice è valido, lo restituisce come valore di ritorno		
+				giacenza=0;
+				for (Movimento mov:elencoMovimenti) {
+					if (mov.codiceMovimento.startsWith("E"))	//mostro solo quelli in entrata
+						giacenza+=mov.quantità;
+					else
+						giacenza-=mov.quantità;
+				}
+				System.out.println("Giacenza: "+giacenza);
 				break;
 			case "6":
 				// codice per il caso "6"
