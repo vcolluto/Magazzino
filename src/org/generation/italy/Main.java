@@ -84,7 +84,32 @@ public class Main {
 		String url="jdbc:mysql://localhost:3306/magazzino";	//stringa di connessione (in questo caso per MySql, ma potrebbe essere diversa per altre tipologie di DBMS)
 		String sql;
 		
-		
+		//caricamento movimenti dal DB
+		//provo a connettermi
+		try (Connection conn=DriverManager.getConnection(url, "root", "jaita101")) {
+			sql="SELECT * FROM movimenti"; 			// oppure, in caso di parametri: "SELECT * FROM movimenti WHERE id=?";
+			try (PreparedStatement ps=conn.prepareStatement(sql)) {		//provo a creare l'istruzione sql
+				try (ResultSet rs=ps.executeQuery()) {	//il ResultSet mi consente di scorrere il risultato della SELECT una riga alla volta
+					
+					//scorro tutte le righe
+					while (rs.next()) {		//rs.next() restituisce true se c'è ancora qualche riga da leggere, falso altrimenti
+						m=new Movimento();
+						m.id=rs.getInt("id");		//recupero il valore della colonna "id"
+						m.data=rs.getDate("Data").toLocalDate();
+						m.codiceProdotto=rs.getString("codProdotto");
+						m.codiceMovimento=rs.getString("codMovimento");
+						m.quantità=rs.getInt("quantità");
+						elencoMovimenti.add(m);	
+						if (m.id>idMov)
+							idMov=m.id;	
+					}
+				}
+			}
+			System.out.println("Movimenti correttamente caricati");
+		} catch (Exception e) {	//catch che gestisce tutti i tipi di eccezione
+			//si è verificato un problema. L'oggetto e (di tipo Exception) contiene informazioni sull'errore verificatosi
+			System.err.println("Si è verificato un errore: "+e.getMessage());
+		}
 		
 		do {
 			System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n**** GESTIONE MAGAZZINO *****\n");
@@ -93,9 +118,9 @@ public class Main {
 			System.out.println("3. Visualizzazione movimenti in entrata");
 			System.out.println("4. Visualizzazione movimenti in uscita");
 			System.out.println("5. Calcolo giacenza prodotto");
-			System.out.println("6. Carica movimenti dal DB");
-			System.out.println("7. Salva movimenti nel DB\n");
-			System.out.println("8. Esci");
+	
+			System.out.println("6. Salva movimenti nel DB\n");
+			System.out.println("7. Esci");
 
 			System.out.print("\n\nInserisci la tua scelta: ");
 			scelta = sc.nextLine();
@@ -237,38 +262,18 @@ public class Main {
 				}
 				System.out.println("Giacenza: "+giacenza);
 				break;
-			case "6":		//carica dal db
+			
+			case "6":	//salva movimenti
 				//provo a connettermi
 				try (Connection conn=DriverManager.getConnection(url, "root", "jaita101")) {
-					sql="SELECT * FROM movimenti"; 			// oppure, in caso di parametri: "SELECT * FROM movimenti WHERE id=?";
-					try (PreparedStatement ps=conn.prepareStatement(sql)) {		//provo a creare l'istruzione sql
-						try (ResultSet rs=ps.executeQuery()) {	//il ResultSet mi consente di scorrere il risultato della SELECT una riga alla volta
-							
-							//scorro tutte le righe
-							while (rs.next()) {		//rs.next() restituisce true se c'è ancora qualche riga da leggere, falso altrimenti
-								m=new Movimento();
-								m.id=rs.getInt("id");		//recupero il valore della colonna "id"
-								m.data=rs.getDate("Data").toLocalDate();
-								m.codiceProdotto=rs.getString("codProdotto");
-								m.codiceMovimento=rs.getString("codMovimento");
-								m.quantità=rs.getInt("quantità");
-								elencoMovimenti.add(m);	
-								if (m.id>idMov)
-									idMov=m.id;	
-							}
-						}
+					//svuoto la tabella
+					sql="TRUNCATE TABLE movimenti";
+					try(PreparedStatement ps=conn.prepareStatement(sql)) {
+						ps.executeUpdate();						
 					}
-					System.out.println("Movimenti correttamente caricati");
-				} catch (Exception e) {	//catch che gestisce tutti i tipi di eccezione
-					//si è verificato un problema. L'oggetto e (di tipo Exception) contiene informazioni sull'errore verificatosi
-					System.err.println("Si è verificato un errore: "+e.getMessage());
-				}
-				break;
-			case "7":	//salva movimenti
-				//provo a connettermi
-				try (Connection conn=DriverManager.getConnection(url, "root", "jaita101")) {
-					sql="INSERT INTO movimenti(id, data, codProdotto, codMovimento, quantità) "
-							+ "VALUE(?, ?, ?, ?, ?)";		//il ? indica un parametro (segnaposto)
+					
+					sql="INSERT INTO movimenti(id, data, codProdotto, codMovimento, quantità, riferimento) "
+							+ "VALUE(?, ?, ?, ?, ?, ?)";		//il ? indica un parametro (segnaposto)
 					int righeInserite=0;
 					for (Movimento mov:elencoMovimenti) {
 						
@@ -280,7 +285,8 @@ public class Main {
 							ps.setString(3, mov.codiceProdotto);
 							ps.setString(4, mov.codiceMovimento);
 							ps.setInt(5, mov.quantità);
-							
+							ps.setString(6, mov.riferimento);
+								
 							
 							righeInserite+=ps.executeUpdate();	//eseguo l'istruzione
 							
@@ -291,7 +297,8 @@ public class Main {
 					//si è verificato un problema. L'oggetto e (di tipo Exception) contiene informazioni sull'errore verificatosi
 					System.err.println("Si è verificato un errore: "+e.getMessage());
 				}
-			case "8":
+				break;
+			case "7":
 				// codice per il caso "6"
 				System.out.println("Arrivederci!");
 				break;
@@ -301,7 +308,7 @@ public class Main {
 			}
 			System.out.println("Premi invio per continuare...");
 			sc.nextLine();
-		} while (!scelta.equals("8")); // torno indietro se la scelta è diversa da 8
+		} while (!scelta.equals("7")); // torno indietro se la scelta è diversa da 8
 	sc.close();
 	}
 
