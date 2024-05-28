@@ -1,5 +1,10 @@
 package org.generation.italy;
 
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -76,6 +81,10 @@ public class Main {
 		String scelta,codP;
 		Movimento m;
 		int idMov=0, giacenza;
+		String url="jdbc:mysql://localhost:3306/magazzino";	//stringa di connessione (in questo caso per MySql, ma potrebbe essere diversa per altre tipologie di DBMS)
+		String sql;
+		
+		
 		
 		do {
 			System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n**** GESTIONE MAGAZZINO *****\n");
@@ -83,8 +92,10 @@ public class Main {
 			System.out.println("2. Inserimento movimento in uscita");
 			System.out.println("3. Visualizzazione movimenti in entrata");
 			System.out.println("4. Visualizzazione movimenti in uscita");
-			System.out.println("5. Calcolo giacenza prodotto\n");
-			System.out.println("6. Esci");
+			System.out.println("5. Calcolo giacenza prodotto");
+			System.out.println("6. Carica movimenti dal DB");
+			System.out.println("7. Salva movimenti nel DB\n");
+			System.out.println("8. Esci");
 
 			System.out.print("\n\nInserisci la tua scelta: ");
 			scelta = sc.nextLine();
@@ -189,6 +200,8 @@ public class Main {
 							System.out.println("Fornitore: "+elencoFornitori.get(mov.riferimento) );
 						else if (mov.codiceMovimento.equals("E02"))
 							System.out.println("Cliente: "+elencoClienti.get(mov.riferimento) );
+						else
+							System.out.println();
 					}
 				}
 				break;
@@ -224,7 +237,61 @@ public class Main {
 				}
 				System.out.println("Giacenza: "+giacenza);
 				break;
-			case "6":
+			case "6":		//carica dal db
+				//provo a connettermi
+				try (Connection conn=DriverManager.getConnection(url, "root", "jaita101")) {
+					sql="SELECT * FROM movimenti"; 			// oppure, in caso di parametri: "SELECT * FROM movimenti WHERE id=?";
+					try (PreparedStatement ps=conn.prepareStatement(sql)) {		//provo a creare l'istruzione sql
+						try (ResultSet rs=ps.executeQuery()) {	//il ResultSet mi consente di scorrere il risultato della SELECT una riga alla volta
+							
+							//scorro tutte le righe
+							while (rs.next()) {		//rs.next() restituisce true se c'è ancora qualche riga da leggere, falso altrimenti
+								m=new Movimento();
+								m.id=rs.getInt("id");		//recupero il valore della colonna "id"
+								m.data=rs.getDate("Data").toLocalDate();
+								m.codiceProdotto=rs.getString("codProdotto");
+								m.codiceMovimento=rs.getString("codMovimento");
+								m.quantità=rs.getInt("quantità");
+								elencoMovimenti.add(m);	
+								if (m.id>idMov)
+									idMov=m.id;	
+							}
+						}
+					}
+					System.out.println("Movimenti correttamente caricati");
+				} catch (Exception e) {	//catch che gestisce tutti i tipi di eccezione
+					//si è verificato un problema. L'oggetto e (di tipo Exception) contiene informazioni sull'errore verificatosi
+					System.err.println("Si è verificato un errore: "+e.getMessage());
+				}
+				break;
+			case "7":	//salva movimenti
+				//provo a connettermi
+				try (Connection conn=DriverManager.getConnection(url, "root", "jaita101")) {
+					sql="INSERT INTO movimenti(id, data, codProdotto, codMovimento, quantità) "
+							+ "VALUE(?, ?, ?, ?, ?)";		//il ? indica un parametro (segnaposto)
+					int righeInserite=0;
+					for (Movimento mov:elencoMovimenti) {
+						
+						try (PreparedStatement ps=conn.prepareStatement(sql)) {		//provo a creare l'istruzione sql
+							
+							//imposto i valori dei parametri				
+							ps.setInt(1, mov.id);		//il primo parametro è l'id. NB: si parte dalla posizione 1
+							ps.setDate(2, Date.valueOf(mov.data));	//il secondo parametro è la data
+							ps.setString(3, mov.codiceProdotto);
+							ps.setString(4, mov.codiceMovimento);
+							ps.setInt(5, mov.quantità);
+							
+							
+							righeInserite+=ps.executeUpdate();	//eseguo l'istruzione
+							
+						}
+					}
+					System.out.println("Righe inserite: "+righeInserite);
+				} catch (Exception e) {	//catch che gestisce tutti i tipi di eccezione
+					//si è verificato un problema. L'oggetto e (di tipo Exception) contiene informazioni sull'errore verificatosi
+					System.err.println("Si è verificato un errore: "+e.getMessage());
+				}
+			case "8":
 				// codice per il caso "6"
 				System.out.println("Arrivederci!");
 				break;
@@ -234,7 +301,7 @@ public class Main {
 			}
 			System.out.println("Premi invio per continuare...");
 			sc.nextLine();
-		} while (!scelta.equals("6")); // torno indietro se la scelta è diversa da 6
+		} while (!scelta.equals("8")); // torno indietro se la scelta è diversa da 8
 	sc.close();
 	}
 
