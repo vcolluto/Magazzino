@@ -251,7 +251,7 @@ public class Main {
 			case "5":
 				// codice per il caso "5"
 				System.out.println("Calcolo giacenza");
-				codP= verificaCodice(elencoProdotti, sc, "Inserisci il codice prodotto: ");	//se il codice è valido, lo restituisce come valore di ritorno		
+				verificaCodice(elencoProdotti, sc, "Inserisci il codice prodotto: ");	//se il codice è valido, lo restituisce come valore di ritorno		
 				giacenza=0;
 				for (Movimento mov:elencoMovimenti) {
 					if (mov.codiceMovimento.startsWith("E"))	//mostro solo quelli in entrata
