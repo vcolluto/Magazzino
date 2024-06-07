@@ -8,7 +8,6 @@ import java.sql.ResultSet;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Scanner;
 
@@ -78,7 +77,7 @@ public class Main {
 
 		DateTimeFormatter df=DateTimeFormatter.ofPattern("dd/MM/yyyy");		//uso il formato giorno/mese/anno
 		Scanner sc = new Scanner(System.in);
-		String scelta,codP;
+		String scelta;
 		Movimento m;
 		int idMov=0, giacenza;
 		String url="jdbc:mysql://localhost:3306/magazzino";	//stringa di connessione (in questo caso per MySql, ma potrebbe essere diversa per altre tipologie di DBMS)
@@ -216,11 +215,11 @@ public class Main {
 					if (mov.codiceMovimento.startsWith("E")) {	//mostro solo quelli in entrata 
 						//System.out.println(mov.toString());
 						System.out.print(
-								"Id: "+mov.id+ "\t"+
-								"Data: "+mov.data.format(df)+ "\t"+
-								"Tipologia: "+tipologieMovimento.get(mov.codiceMovimento)+ "\t"+
-								"Prodotto: "+elencoProdotti.get(mov.codiceProdotto)+ "\t"+
-								"Quantità: "+mov.quantità+ "\t");
+							"Id: "+mov.id+ "\t"+
+							"Data: "+mov.data.format(df)+ "\t"+
+							"Tipologia: "+tipologieMovimento.get(mov.codiceMovimento)+ "\t"+
+							"Prodotto: "+elencoProdotti.get(mov.codiceProdotto)+ "\t"+
+							"Quantità: "+mov.quantità+ "\t");
 						if (mov.codiceMovimento.equals("E01"))
 							System.out.println("Fornitore: "+elencoFornitori.get(mov.riferimento) );
 						else if (mov.codiceMovimento.equals("E02"))
@@ -236,11 +235,11 @@ public class Main {
 				for (Movimento mov:elencoMovimenti) {
 					if (mov.codiceMovimento.startsWith("U")) {	//mostro solo quelli in entrata
 						System.out.print(
-								"Id: "+mov.id+ "\t"+
-								"Data: "+mov.data.format(df)+ "\t"+
-								"Tipologia: "+tipologieMovimento.get(mov.codiceMovimento)+ "\t"+
-								"Prodotto: "+elencoProdotti.get(mov.codiceProdotto)+ "\t"+
-								"Quantità: "+mov.quantità+ "\t");
+							"Id: "+mov.id+ "\t"+
+							"Data: "+mov.data.format(df)+ "\t"+
+							"Tipologia: "+tipologieMovimento.get(mov.codiceMovimento)+ "\t"+
+							"Prodotto: "+elencoProdotti.get(mov.codiceProdotto)+ "\t"+
+							"Quantità: "+mov.quantità+ "\t");
 						if (mov.codiceMovimento.equals("U02"))
 							System.out.println("Fornitore: "+elencoFornitori.get(mov.riferimento) );
 						else if (mov.codiceMovimento.equals("U01"))
